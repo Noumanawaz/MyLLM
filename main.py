@@ -274,7 +274,7 @@ class ChatRequest(BaseModel):
     prompt: str
     max_tokens: int = 80
     temperature: float = 0.7
-    model: str = "openai/gpt-3.5-turbo"  # Default free model
+    model: str = "meta-llama/llama-2-7b-chat"  # Default FREE model
     session_id: Optional[str] = None
     use_cache: bool = True
     clear_memory: bool = False
@@ -298,10 +298,9 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", None)
 
 # Free models available on OpenRouter
 FREE_MODELS = {
-    "openai/gpt-3.5-turbo": "GPT-3.5 Turbo (free tier)",
-    "meta-llama/llama-2-7b-chat": "Llama 2 7B Chat (free tier)",
-    "google/palm-2-chat-bison": "PaLM 2 Chat (free tier)",
-    "anthropic/claude-instant-v1": "Claude Instant (free tier)"
+    "meta-llama/llama-2-7b-chat": "Llama 2 7B Chat (FREE)",
+    "google/palm-2-chat-bison": "PaLM 2 Chat (FREE)",
+    "anthropic/claude-instant-v1": "Claude Instant (FREE)"
 }
 
 # Optimized HTTP client with connection pooling
@@ -678,7 +677,7 @@ async def quick_chat(prompt: str, session_id: Optional[str] = None):
         prompt=prompt,
         max_tokens=60,
         temperature=0.7,
-        model="openai/gpt-3.5-turbo",
+        model="meta-llama/llama-2-7b-chat",
         session_id=session_id,
         use_cache=True
     )
