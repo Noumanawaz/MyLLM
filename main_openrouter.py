@@ -31,10 +31,7 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", None)
 
 # Free models available on OpenRouter
 FREE_MODELS = {
-    "openai/gpt-3.5-turbo": "GPT-3.5 Turbo (free tier)",
-    "meta-llama/llama-2-7b-chat": "Llama 2 7B Chat (free tier)",
-    "google/palm-2-chat-bison": "PaLM 2 Chat (free tier)",
-    "anthropic/claude-instant-v1": "Claude Instant (free tier)"
+    "qwen/qwen3-coder:free": "Qwen3 Coder (FREE - 262K context)",
 }
 
 @app.get("/")
