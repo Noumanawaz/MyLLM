@@ -1,0 +1,6 @@
+# Hugging Face API Token (optional - you can use without it but with rate limits)
+# Get your free token from: https://huggingface.co/settings/tokens
+HF_TOKEN=your_huggingface_token_here
+
+# Alternative: OpenRouter API (if you prefer to use OpenRouter instead)
+# OPENROUTER_API_KEY=your_openrouter_api_key_here 
