@@ -2,10 +2,5 @@ fastapi==0.104.1
 uvicorn[standard]==0.24.0
 requests==2.31.0
 python-dotenv==1.0.0
-pydantic==2.5.0
-httpx==0.25.2
-
-# Optional production enhancements
-gunicorn==21.2.0        # Alternative WSGI server
-python-multipart==0.0.6 # For form data handling
-email-validator==2.1.0  # For email validation in pydantic 
+pydantic==2.4.2
+httpx==0.25.2 
