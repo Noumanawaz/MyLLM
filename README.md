@@ -1,188 +1,142 @@
-# Restaurant Conversational LLM API
+# Restaurant LLM API
 
-A FastAPI application that provides restaurant-related conversational responses using a free LLM from Hugging Face.
+A FastAPI application that provides restaurant-related conversational responses using OpenRouter's free models with memory and caching.
 
-## Features
+## 🚀 Deploy to Hugging Face Spaces
 
-- 🍽️ Restaurant-focused conversational AI
-- 🆓 Uses free Hugging Face models (no cost)
-- ⚡ FastAPI for high performance
-- 🔧 Easy to configure and extend
-- 📝 RESTful API endpoints
-- 🎯 Specialized restaurant conversation endpoint
+### Step 1: Create Hugging Face Account
 
-## Setup
+1. Go to [huggingface.co](https://huggingface.co)
+2. Sign up for a free account
+3. Verify your email
 
-### 1. Install Dependencies
+### Step 2: Create a New Space
+
+1. Click **"New Space"** on your profile
+2. Choose **"Docker"** as the SDK
+3. Set **Space name**: `restaurant-llm-api`
+4. Set **License**: `MIT`
+5. Set **Visibility**: `Public` (or Private if you prefer)
+6. Click **"Create Space"**
+
+### Step 3: Configure Space Settings
+
+1. In your Space, go to **"Settings"** tab
+2. Set **Hardware**: `CPU Basic` (free tier)
+3. Set **Docker SDK**: `Docker`
+4. Set **Python version**: `3.12`
+
+### Step 4: Add Required Files
+
+#### Create `Dockerfile`:
+
+```dockerfile
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first for better caching
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Expose port
+EXPOSE 7860
+
+# Run the application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7860"]
+```
+
+#### Create `.dockerignore`:
+
+```
+venv/
+__pycache__/
+*.pyc
+.env
+.git/
+.gitignore
+```
+
+#### Update `requirements.txt` (if needed):
+
+```
+fastapi>=0.115.2
+uvicorn[standard]==0.22.0
+requests==2.31.0
+python-dotenv==1.0.0
+pydantic>=2.9.2
+httpx==0.24.1
+```
+
+### Step 5: Set Environment Variables
+
+1. In your Space settings, go to **"Repository secrets"**
+2. Add these secrets:
+   - `OPENROUTER_API_KEY`: Your OpenRouter API key
+   - `PORT`: `7860`
+
+### Step 6: Deploy
+
+1. Commit and push your files to the Space
+2. Hugging Face will automatically build and deploy
+3. Your API will be available at: `https://your-username-restaurant-llm-api.hf.space`
+
+## 🔧 Local Development
+
+### Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Environment Configuration (Optional)
+### Set Environment Variables
 
-Create a `.env` file in the root directory:
+Create `.env` file:
+
+```
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+```
+
+### Run Locally
 
 ```bash
-# Copy the example file
-cp env_example.txt .env
-
-# Edit .env and add your Hugging Face token (optional)
-HF_TOKEN=your_huggingface_token_here
+uvicorn main:app --host 0.0.0.0 --port 8001
 ```
 
-**Note**: You can use the API without a Hugging Face token, but you'll have rate limits. Get a free token from [Hugging Face Settings](https://huggingface.co/settings/tokens).
+## 📡 API Endpoints
 
-### 3. Run the Application
+- `GET /` - API info and health
+- `POST /chat` - Main chat endpoint
+- `POST /chat/new` - Start new session
+- `GET /models` - List available models
+- `GET /menu` - Get restaurant menu
 
-```bash
-# Run with uvicorn
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+## 🆓 Free Models Available
 
-# Or run directly
-python main.py
-```
+- `qwen/qwen3-coder:free` - Qwen3 Coder (262K context)
+- `google/palm-2-chat-bison` - PaLM 2 Chat
+- `anthropic/claude-instant-v1` - Claude Instant
 
-The API will be available at `http://localhost:8000`
+## 🔑 Get OpenRouter API Key
 
-## API Endpoints
+1. Go to [openrouter.ai](https://openrouter.ai)
+2. Sign up for free account
+3. Get your API key from dashboard
+4. Add to environment variables
 
-### 1. Health Check
+## 📊 Features
 
-```http
-GET /health
-```
-
-### 2. General Chat
-
-```http
-POST /chat
-Content-Type: application/json
-
-{
-  "prompt": "What's the best way to cook pasta?",
-  "max_length": 150,
-  "temperature": 0.7
-}
-```
-
-### 3. Restaurant-Specific Chat
-
-```http
-POST /chat/restaurant
-Content-Type: application/json
-
-{
-  "prompt": "How do I make a good pizza dough?",
-  "max_length": 200,
-  "temperature": 0.8
-}
-```
-
-## Usage Examples
-
-### Using curl
-
-```bash
-# General chat
-curl -X POST "http://localhost:8000/chat" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "prompt": "What are some popular Italian dishes?",
-    "max_length": 150,
-    "temperature": 0.7
-  }'
-
-# Restaurant-specific chat
-curl -X POST "http://localhost:8000/chat/restaurant" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "prompt": "How do I make authentic carbonara?",
-    "max_length": 200,
-    "temperature": 0.8
-  }'
-```
-
-### Using Python requests
-
-```python
-import requests
-
-# General chat
-response = requests.post(
-    "http://localhost:8000/chat",
-    json={
-        "prompt": "What's the best way to cook pasta?",
-        "max_length": 150,
-        "temperature": 0.7
-    }
-)
-print(response.json())
-
-# Restaurant-specific chat
-response = requests.post(
-    "http://localhost:8000/chat/restaurant",
-    json={
-        "prompt": "Can you recommend a vegetarian dish?",
-        "max_length": 200,
-        "temperature": 0.8
-    }
-)
-print(response.json())
-```
-
-## API Documentation
-
-Once the server is running, you can access:
-
-- **Interactive API docs**: http://localhost:8000/docs
-- **ReDoc documentation**: http://localhost:8000/redoc
-
-## Model Information
-
-The API currently uses:
-
-- **Model**: `microsoft/DialoGPT-medium`
-- **Provider**: Hugging Face (free tier)
-- **Type**: Conversational AI
-
-You can easily change the model by modifying the `MODEL_ID` variable in `main.py`.
-
-## Alternative Models
-
-You can switch to other free models by changing the `MODEL_ID` in `main.py`:
-
-```python
-# Some alternative free models:
-MODEL_ID = "microsoft/DialoGPT-small"  # Smaller, faster
-MODEL_ID = "microsoft/DialoGPT-large"  # Larger, more capable
-MODEL_ID = "EleutherAI/gpt-neo-125M"   # Different architecture
-```
-
-## Error Handling
-
-The API includes comprehensive error handling for:
-
-- Network timeouts
-- Model API errors
-- Invalid requests
-- Server errors
-
-## Rate Limits
-
-- **Without token**: Limited requests per hour
-- **With token**: Higher rate limits
-- **Free tier**: Suitable for development and small-scale use
-
-## Contributing
-
-Feel free to contribute by:
-
-1. Adding new endpoints
-2. Improving error handling
-3. Adding more model options
-4. Enhancing documentation
-
-## License
-
-This project is open source and available under the MIT License.
+- ✅ Conversation memory
+- ✅ Response caching
+- ✅ Session management
+- ✅ Order context tracking
+- ✅ Free LLM models
+- ✅ Optimized performance
